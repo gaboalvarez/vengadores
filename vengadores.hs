@@ -25,13 +25,20 @@ corromperTecnologia personaje = (artesMarciales.superFuerza.arrojarEscudo) perso
 saberEnergia = energia
 
 esRobot personaje = (take 5 (nombre personaje))=="robot"
-poseeElemento personaje elemento = elem elemento (elementos personaje)
+poseeElemento elemento personaje = elem elemento (elementos personaje)
 potencia personaje = (energia personaje)*(length(elementos personaje))
 
-pelea atacante victima | saberEnergia((ataqueFavorito((ataqueFavorito atacante) victima)) atacante) > saberEnergia( (ataqueFavorito atacante) victima) = (nombre atacante)
- | otherwise = (nombre victima)
+pelea atacante victima | saberEnergia((ataqueFavorito((ataqueFavorito atacante) victima)) atacante) > saberEnergia( (ataqueFavorito atacante) victima) = atacante
+ | otherwise = victima
 
-batallaFinal vengadores robots | (length (listaVengadoresGanadores vengadores robots)) > (div (length vengadores) 2) = "ganan los vengadores"
+tienenGema personajes =  any (poseeElemento "gema del infinito") personajes
+batallaFinal vengadores robots | (tienenGema vengadores)&&not(tienenGema robots) = "ganan vengadores"
+ | (tienenGema robots)&&not(tienenGema vengadores) = "ganan robots"
+ | length(filter esRobot (listaGanadores vengadores robots)) < (div (length vengadores) 2) = "ganan los vengadores"
  | otherwise = "gana ultron"
+listaGanadores [] robots = []
+listaGanadores vengadores [] = []
+listaGanadores (vengador:restoVengadores) (robot:restoRobots) = [(pelea vengador robot)]++(listaGanadores restoVengadores restoRobots)
 
-listaVengadoresGanadores vengadores robots = filter (not.esRobot) (zipWith pelea vengadores robots)
+vengadoress = [hulk,thor,capitan,ironMan]
+robotss = [Personaje ("robot "++show n) (proyectarRayos 1) [] 100 | n <-[1..]]
